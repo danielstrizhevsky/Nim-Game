@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class nimGame {
 
 	private static final int stackMaxBits = 4;
-	private static final int maxStacks = 10;
+	private static final int maxStacks = 7;
 	private static Scanner scan;
 
 	public static void main(String[] args) {
@@ -20,10 +20,18 @@ public class nimGame {
 				+ "NimBot choose (3)? ");
 		scan = new Scanner(System.in);
 		while (!scan.hasNextInt()) {
-			System.out.println("Please enter 1, 2, or 3: ");
+			System.out.print("Please enter 1, 2, or 3: ");
 			scan.next();
 		}
 		turnChoice = scan.nextInt();
+		while(turnChoice < 1 || turnChoice > 3) {
+			System.out.print("Please enter 1, 2, or 3: ");
+			while (!scan.hasNextInt()) {
+				System.out.print("Please enter 1, 2, or 3: ");
+				scan.next();
+			}
+			turnChoice = scan.nextInt();
+		}
 		if (turnChoice == 1)
 			playGame(stacks, true);
 		else if (turnChoice == 2)
@@ -33,7 +41,7 @@ public class nimGame {
 	}
 
 	public static boolean[][] convertToBinary(int[] stacks) {
-		//array of arrays of bits (array of numbers of things in each pile)
+		//array of arrays of bits (array of numbers of things in each stack)
 		boolean[][] binaryStacks = new boolean[stacks.length][stackMaxBits];
 		for (int i = 0; i < stacks.length; i++) {
 			int quotient = stacks[i];
@@ -167,6 +175,16 @@ public class nimGame {
 			else { //does computer turn stuff
 				boolean[][] binaryStacks = convertToBinary(stacks);
 				Point update = moveToZero(binaryStacks);
+				if (stacks[update.x] - update.y == 0) { //was already in zero position
+					int randomStack = (int) (stacks.length * Math.random());
+					while(stacks[randomStack] == 0) {
+						//cycle through each stack until one is not empty
+						randomStack = ((randomStack + 1) % stacks.length);
+					}
+					int randomRemoved = (int) (1 + (stacks[randomStack] * Math.random()));
+					update.x = randomStack;
+					update.y = stacks[randomStack] - randomRemoved;
+				}
 				System.out.println("Nimbot removes " + (stacks[update.x] - update.y) +
 						" items from stack " + (update.x + 1) + ".");
 				stacks[update.x] = update.y;
@@ -175,10 +193,14 @@ public class nimGame {
 		}
 		else { //game is over, the person who had moved previously is the winner
 			if (playerTurn) {
+				System.out.println("----------------------------------");
 				System.out.println("Nimbot won! Better luck next time!");
+				System.out.println("----------------------------------");
 			}
 			else {
+				System.out.println("------------------");
 				System.out.println("You won! Good job!");
+				System.out.println("------------------");
 			}
 		}
 	}
