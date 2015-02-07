@@ -87,7 +87,13 @@ public class nimGame {
 				scan = new Scanner(System.in);
 				System.out.print("Remove from which stack? ");
 				chosenStack = scan.nextInt() - 1;
-				System.out.print("Remove how many from stack " + chosenStack + "? ");
+				while (chosenStack > stacks.length - 1 || chosenStack < 1 || 
+						stacks[chosenStack] == 0) {
+					System.out.print("Please choose a stack that has at least "
+							+ "1 item in it: ");
+					chosenStack = scan.nextInt() - 1;
+				}
+				System.out.print("Remove how many from stack " + (chosenStack + 1) + "? ");
 				amountRemoved = scan.nextInt();
 				while (amountRemoved < 1 || amountRemoved > stacks[chosenStack]) {
 					System.out.print("Please enter a positive integer no greater than " +
