@@ -4,12 +4,32 @@ import java.util.Scanner;
 
 public class nimGame {
 
-	private static final int stackMaxBits = 10;
+	private static final int stackMaxBits = 4;
+	private static final int maxStacks = 10;
 	private static Scanner scan;
 
 	public static void main(String[] args) {
-		int[] stacks = new int[]{10, 12, 7, 3, 1, 4};
-		playGame(stacks, true);
+		int numStacks = 3 + (int) ((maxStacks - 2) * Math.random()); //min stacks = 3
+		int[] stacks = new int[numStacks];
+		int turnChoice = 0;
+		for (int i = 0; i < numStacks; i++) {
+			stacks[i] = 1 + (int) ((Math.pow(2, stackMaxBits) - 1) * Math.random());
+		}
+		printGameBoard(stacks);
+		System.out.print("Would you like to go first (1), second (2), or let "
+				+ "NimBot choose (3)? ");
+		scan = new Scanner(System.in);
+		while (!scan.hasNextInt()) {
+			System.out.println("Please enter 1, 2, or 3: ");
+			scan.next();
+		}
+		turnChoice = scan.nextInt();
+		if (turnChoice == 1)
+			playGame(stacks, true);
+		else if (turnChoice == 2)
+			playGame(stacks, false);
+		else if (turnChoice == 3)
+			playGame(stacks, chooseOrder(convertToBinary(stacks)));
 	}
 
 	public static boolean[][] convertToBinary(int[] stacks) {
@@ -53,6 +73,7 @@ public class nimGame {
 							selectedRow = k;
 							rowChosen = true;
 							i++;
+							break;
 						}
 					}
 				}
@@ -65,6 +86,32 @@ public class nimGame {
 		}
 		return new Point(selectedRow,newAmount);
 	}
+	
+	//returns true if player should go first, false if NimBot should go first
+	public static boolean chooseOrder(boolean[][] stacks) {
+		for (int i = (stackMaxBits - 1); i >= 0; i--) {
+			boolean bitNimsum = false;
+			//iterates through every pile for the current bit
+			for (int j = 0; j < stacks.length; j++) {
+				bitNimsum ^= stacks[j][i];
+			}
+			if (bitNimsum)
+				return false;
+		}
+		return true;
+	}
+	
+	public static void printGameBoard(int[] stacks) {
+		System.out.print("Current game board: ");
+		for (int i = 0; i < stacks.length; i++) {
+			System.out.print("\t" + stacks[i]);
+		}
+		System.out.print("\n-----------------");
+		for (int i = 0; i < stacks.length; i++) {
+			System.out.print("--------");
+		}
+		System.out.println();
+	}
 
 	public static void playGame(int[] stacks, boolean playerTurn) {
 		boolean gameOver = false;
@@ -76,15 +123,7 @@ public class nimGame {
 			gameOver = true;
 		if (!gameOver) { //checks if game is over
 			//game board is printed no matter whose turn it is
-			System.out.print("Current game board: ");
-			for (int i = 0; i < stacks.length; i++) {
-				System.out.print("\t" + stacks[i]);
-			}
-			System.out.print("\n-----------------");
-			for (int i = 0; i < stacks.length; i++) {
-				System.out.print("--------");
-			}
-			System.out.println();
+			printGameBoard(stacks);
 			if (playerTurn) { //does player turn stuff
 				int chosenStack = 0;
 				int amountRemoved = 0;
