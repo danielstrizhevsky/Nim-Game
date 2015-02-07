@@ -65,7 +65,7 @@ public class nimGame {
 		}
 		return new Point(selectedRow,newAmount);
 	}
-	
+
 	public static void playGame(int[] stacks, boolean playerTurn) {
 		boolean gameOver = false;
 		int itemsLeft = 0;
@@ -80,24 +80,46 @@ public class nimGame {
 			for (int i = 0; i < stacks.length; i++) {
 				System.out.print("\t" + stacks[i]);
 			}
+			System.out.print("\n-----------------");
+			for (int i = 0; i < stacks.length; i++) {
+				System.out.print("--------");
+			}
 			System.out.println();
 			if (playerTurn) { //does player turn stuff
 				int chosenStack = 0;
 				int amountRemoved = 0;
 				scan = new Scanner(System.in);
 				System.out.print("Remove from which stack? ");
+				while (!scan.hasNextInt()) {
+					System.out.print("Please enter an integer: ");
+					scan.next();
+				}
 				chosenStack = scan.nextInt() - 1;
-				while (chosenStack > stacks.length - 1 || chosenStack < 1 || 
-						stacks[chosenStack] == 0) {
+				while (chosenStack > stacks.length - 1 || chosenStack < 0
+						|| stacks[chosenStack] == 0) {
 					System.out.print("Please choose a stack that has at least "
 							+ "1 item in it: ");
+					while (!scan.hasNextInt()) {
+						System.out.print("Please enter an integer: ");
+						scan.next();
+					}
 					chosenStack = scan.nextInt() - 1;
 				}
 				System.out.print("Remove how many from stack " + (chosenStack + 1) + "? ");
+				while (!scan.hasNextInt()) {
+					System.out.print("Please enter a positive integer no greater than: "
+							+ stacks[chosenStack] + ": ");
+					scan.next();
+				}
 				amountRemoved = scan.nextInt();
 				while (amountRemoved < 1 || amountRemoved > stacks[chosenStack]) {
-					System.out.print("Please enter a positive integer no greater than " +
-							stacks[chosenStack] + ": ");
+					System.out.print("Please enter a positive integer no greater than "
+							+ stacks[chosenStack] + ": ");
+					while (!scan.hasNextInt()) {
+						System.out.print("Please enter a positive integer no greater than: "
+								+ stacks[chosenStack] + ": ");
+						scan.next();
+					}
 					amountRemoved = scan.nextInt();
 				}
 				stacks[chosenStack] -= amountRemoved;
